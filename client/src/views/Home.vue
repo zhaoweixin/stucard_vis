@@ -1,12 +1,16 @@
 <template>
   <div class="home">
     <el-container>
-      <el-header>Student Card Data Visualization</el-header>
+      <el-header>
+        <h3>Student Card Data Visualization</h3>
+      </el-header>
       <el-container>
-        <el-aside width="960px">
+        <el-aside width="960px" style="overflow:auto">
           <Behavior></Behavior>
         </el-aside>
-        <el-main>Main</el-main>
+        <el-main>
+          <BehaviorDetail></BehaviorDetail>
+        </el-main>
       </el-container>
     </el-container>
   </div>
@@ -15,11 +19,17 @@
 <script>
 // @ is an alias to /src
 import Behavior from '../components/Behavior'
-
+import BehaviorDetail from '../components/BehaviorDetail'
 export default {
   name: 'home',
   components: {
-    Behavior
+    Behavior,
+    BehaviorDetail
   }
 }
 </script>
+<style>
+.el-header{
+  border: 3px solid;
+}
+</style>
