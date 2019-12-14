@@ -34,16 +34,30 @@ app.post('/getfrequentpattern', (req,res,next) => {
 })
 
 app.post('/getHall', (req, res, next) => {
-    let data = [
-        {'country': "Brent", 'date': '2017-11-14 11:46:00', 'price': 2.5},
-        {'country': "Brent", 'date': '2017-11-14 17:46:00', 'price': 8},
-        {'country': "Brent", 'date': '2017-11-15 13:46:00', 'price': 8},
-        {'country': "xx", 'date': '2017-11-14 11:46:00', 'price': 2.5},
-        {'country': "xx", 'date': '2017-11-15 16:46:00', 'price': 6}
-    ]
+    
+    MongoClient.connect(url, (err, client) => {
+        if(err){
+            console.log(err)
+        }
+        assert.equal(null, err);
+        var db = client.db(dbname)
+        var result = findHall(db, req.body.config, (docs) => {
+            res.setHeader("Access-Control-Allow-Origin", "*");
+            res.send(docs);
+        })
+        client.close()
+    })
 
-    res.setHeader("Access-Control-Allow-Origin", "*");
-    res.send(data);
+    // let data = [
+    //     {'country': "Brent", 'date': '2017-11-14 11:46:00', 'price': 2.5},
+    //     {'country': "Brent", 'date': '2017-11-14 17:46:00', 'price': 8},
+    //     {'country': "Brent", 'date': '2017-11-15 13:46:00', 'price': 8},
+    //     {'country': "xx", 'date': '2017-11-14 11:46:00', 'price': 2.5},
+    //     {'country': "xx", 'date': '2017-11-15 16:46:00', 'price': 6}
+    // ]
+
+    // res.setHeader("Access-Control-Allow-Origin", "*");
+    // res.send(data);
 })
 
 
@@ -55,7 +69,6 @@ app.post('/testmongodb', (req, res, next) => {
         }
         assert.equal(null, err);
         var db = client.db(dbname)
-
         var result = findDocuments(db, req.body.config, (docs) => {
             res.setHeader("Access-Control-Allow-Origin", "*");
             res.send(docs);
@@ -103,9 +116,9 @@ const findDocuments = function(db, config, callback) {
 
   const findHall = function(db, config, callback) {
     // Get the documents collection
-    const collection = db.collection('frequentpattern');
+    const collection = db.collection(config.table);
     // Find some documents
-    collection.find(config).toArray(function(err, docs) {
+    collection.find().toArray(function(err, docs) {
       assert.equal(err, null);
       console.log("Found the following records");
       callback(docs);

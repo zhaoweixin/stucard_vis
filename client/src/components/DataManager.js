@@ -28,7 +28,7 @@ export default class DataManager{
         });
     }
     static getHall(data){
-        //data = {'config': {'steps': 1}}
+        //data = {'config': {'table': 'hall_weekday'}}
         //if exist
         return axios.post("http://127.0.0.1:3000/getHall", qs.stringify(data), {
             header: {

@@ -41,8 +41,7 @@ export default {
         initHall(config){
             let that = this;
             DataManager.getHall(config).then((res) => {
-                console.log('res=>', res)
-                that.drawHallGraph({'steps': config.config.steps, "data": res.data})
+                that.drawHallGraph({"data": res.data[0].value.data, "steps": res.data[0].value.steps})
             })
         },
         drawfrequentgraph(config){
@@ -110,8 +109,15 @@ export default {
             chart.render();
         },
         drawHallGraph(config){
-            console.log('Hall', config)
-            const data = config.data
+            d3.select('#halltitle').select('h4').html('Hall Condition: ' + config.steps)
+            const data = []
+            config.data.forEach( (d,i) => {
+                d.data.forEach( (v,j) => {
+                    v['time'] = '2019-01-01 ' + v['time']
+                    v['name'] = d.name
+                    data.push(v)
+                })
+            })
             const chart = new G2.Chart({
                 container: 'hallgraph',
                 forceFit: true,
@@ -119,20 +125,20 @@ export default {
                 padding: [ 20, 110, 70, 35 ]
             });
             chart.source(data);
-            chart.scale('date', {
+            chart.scale('time', {
                 range: [ 0, 1 ],
                 tickCount: 10,
                 type: 'timeCat',
-                mask: 'YYYY-MM-DD HH:mm:ss'
+                mask: 'HH:mm:ss'
             });
-            chart.axis('date', {
+            chart.axis('time', {
                 label: {
                     textStyle: {
                     fill: '#aaaaaa'
                     }
                 }
             });
-            chart.axis('price', {
+            chart.axis('value', {
                 label: {
                     textStyle: {
                     fill: '#aaaaaa'
@@ -146,16 +152,16 @@ export default {
             chart.legend({
                 attachLast: true
             });
-            chart.line().position('date*price')
-            .color('country');
+            chart.line().position('time*value')
+            .color('name');
 
             chart.render();
             
         }
     },
     mounted(){
-        this.initFrequentItem({'config': {'steps': 3}})
-        this.initHall({'config': {'steps': 3}})
+        this.initFrequentItem({'config': {'steps': 1}})
+        this.initHall({'config': {'table': 'hall_weekday'}})
     }
 }
 </script>
