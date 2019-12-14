@@ -48,18 +48,77 @@ app.post('/getHall', (req, res, next) => {
         client.close()
     })
 
-    // let data = [
-    //     {'country': "Brent", 'date': '2017-11-14 11:46:00', 'price': 2.5},
-    //     {'country': "Brent", 'date': '2017-11-14 17:46:00', 'price': 8},
-    //     {'country': "Brent", 'date': '2017-11-15 13:46:00', 'price': 8},
-    //     {'country': "xx", 'date': '2017-11-14 11:46:00', 'price': 2.5},
-    //     {'country': "xx", 'date': '2017-11-15 16:46:00', 'price': 6}
-    // ]
-
-    // res.setHeader("Access-Control-Allow-Origin", "*");
-    // res.send(data);
 })
 
+
+app.post('/getVector', (req,res,next) => {
+    //req.body.config = {'label': 1}
+    MongoClient.connect(url, (err, client) => {
+        if(err){
+            console.log(err)
+        }
+        assert.equal(null, err);
+        var db = client.db(dbname)
+        var result = findvector(db, req.body.config, (docs) => {
+            let data = {'box': [], 'bar': docs[0].value.dept}
+            let dict = {
+                'raw1': '总存储金额',
+                'raw2': '总消费金额/总存储金额',
+                'raw3': '食堂消费/总存储',
+                'raw4': '一天消费超20RMB次数',
+                'raw5': '超市消费次数'
+            }
+            for(key in dict){
+
+            }
+            
+            for(key in dict){
+                data['box'].push({'x': dict[key],
+                                    'low': docs[0]['value'][key][0],
+                                    'q1': docs[0]['value'][key][1],
+                                    'median': docs[0]['value'][key][2],
+                                    'q3': docs[0]['value'][key][3],
+                                    'high': docs[0]['value'][key][4]
+                                })
+            }
+            res.setHeader("Access-Control-Allow-Origin", "*");
+            res.send(data);
+        })
+        client.close()
+    })
+})
+
+app.post('/getCluster', (req,res,next) => {
+    //req.body.config = {}
+    MongoClient.connect(url, (err, client) => {
+        if(err){
+            console.log(err)
+        }
+        assert.equal(null, err);
+        var db = client.db(dbname)
+        var result = findCluster(db, {}, (docs) => {
+            res.setHeader("Access-Control-Allow-Origin", "*");
+            res.send(docs);
+        })
+        client.close()
+    })
+})
+
+app.post('/getConfig', (req,res,next) => {
+    //req.body.config = {}
+    MongoClient.connect(url, (err, client) => {
+        if(err){
+            console.log(err)
+        }
+        assert.equal(null, err);
+        var db = client.db(dbname)
+        var result = findConfig(db, {}, (docs) => {
+            res.setHeader("Access-Control-Allow-Origin", "*");
+            res.send(docs);
+        })
+        client.close()
+    })
+})
 
 app.post('/testmongodb', (req, res, next) => {
     //req.body
@@ -92,6 +151,7 @@ app.post('/testmysql', (req, res, next) => {
     });
 })
 
+
 const findDocuments = function(db, config, callback) {
     // Get the documents collection
     const collection = db.collection('behavior');
@@ -118,6 +178,42 @@ const findDocuments = function(db, config, callback) {
     // Get the documents collection
     const collection = db.collection(config.table);
     // Find some documents
+    collection.find().toArray(function(err, docs) {
+      assert.equal(err, null);
+      console.log("Found the following records");
+      callback(docs);
+    });
+  }
+
+  const findvector = function(db, config, callback) {
+    // Get the documents collection
+    const collection = db.collection('vector');
+    // Find some documents
+    //{"label": -1}
+    collection.find(config).toArray(function(err, docs) {
+      assert.equal(err, null);
+      console.log("Found the following records");
+      callback(docs);
+    });
+  }
+
+  const findCluster = function(db, config, callback) {
+    // Get the documents collection
+    const collection = db.collection('scatter_plot_data');
+    // Find some documents
+    //{}
+    collection.find().toArray(function(err, docs) {
+      assert.equal(err, null);
+      console.log("Found the following records");
+      callback(docs);
+    });
+  }
+
+  const findConfig = function(db, config, callback) {
+    // Get the documents collection
+    const collection = db.collection('config');
+    // Find some documents
+    //{}
     collection.find().toArray(function(err, docs) {
       assert.equal(err, null);
       console.log("Found the following records");

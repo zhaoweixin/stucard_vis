@@ -36,4 +36,31 @@ export default class DataManager{
             }
         });
     }
+    static getVector(data){
+        //data = {'config': {'label': -1}}
+        //if exist
+        return axios.post("http://127.0.0.1:3000/getVector", qs.stringify(data), {
+            header: {
+                "Content-Type": "application/x-www-form-urlencoded"
+            }
+        });
+    }
+    static getCluster(data){
+        //data = {'config': {}}
+        //if exist
+        return axios.post("http://127.0.0.1:3000/getCluster", qs.stringify(data), {
+            header: {
+                "Content-Type": "application/x-www-form-urlencoded"
+            }
+        });
+    }
+    static getConfig(){
+        //data = {'config': {}}
+        //if exist
+        return axios.post("http://127.0.0.1:3000/getConfig", qs.stringify(), {
+            header: {
+                "Content-Type": "application/x-www-form-urlencoded"
+            }
+        });
+    }
 }

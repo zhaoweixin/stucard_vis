@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <router-view/>
-    <el-button @click='button_handle()'>click test</el-button>
+    <!-- <el-button @click='button_handle()'>click test</el-button> -->
   </div>
 </template>
 

@@ -1,5 +1,8 @@
 <template>
     <div class='behavior'>
+        <div id="detailtitle" class="subtitle">
+            <p>Major - </p>
+        </div>
         <div>
             <h4 id='matrix'>cost matrix</h4>
             <div id='heatmap'></div>
@@ -21,13 +24,22 @@
         </div>
         <div >
             <div id="barshop">
-
+                <div id="barshoptitle">
+                        <h4 id='averagecount'>Shop</h4>
+                    </div>
+                <div id="barshopgraph"></div>
             </div>
             <div id="barcan">
-
+                <div id="barcantitle">
+                        <h4 id='averagecount'>Canteen</h4>
+                    </div>
+                <div id="barcangraph"></div>
             </div>
             <div id="bartech">
-
+                <div id="bartechtitle">
+                        <h4 id='averagecount'>Tech</h4>
+                    </div>
+                <div id="bartechgraph"></div>
             </div>
         </div>
     </div>
@@ -50,8 +62,17 @@ export default {
             ]
         }
     },
-    computed: {},
-    watch: {},
+    computed: {
+        costmatrix () {
+                return this.$store.state.costmatrix
+            }
+    },
+    watch: {
+        costmatrix: function(val, oldVal){
+            console.log('watch-costmatrix', val)
+            this.watchhandle_costmatrix(val)
+        }
+    },
     mounted() {
         //this.initComponent()
         this.initData({"config": {'name': '18工业设计'}, "title": 'COST MATRIX'})
@@ -76,6 +97,7 @@ export default {
         },
         initData(config){
             let that = this
+            d3.select('#detailtitle').select('p').html('Major - ' + config.config.name)
             DataManager.test(config).then((res) => {
                 console.log(res)
                 that.DrawHeatMap({
@@ -124,7 +146,7 @@ export default {
             }
             const chart = new G2.Chart({
                 container: 'heatmap',
-                height: 400,
+                height: 350,
                 width: 700,
                 padding: [ 20, 80, 120, 50 ]
             });
@@ -243,7 +265,7 @@ export default {
             const valuelist = data.map(x => x.v)
             const ticks = Math.floor((Math.max(...valuelist) - Math.min(...valuelist)) / 5)
             const chart = new G2.Chart({
-                container: 'barcan',
+                container: 'barcangraph',
                 forceFit: true,
                 height: 250
             });
@@ -259,7 +281,7 @@ export default {
             const valuelist = data.map(x => x.v)
             const ticks = Math.floor((Math.max(...valuelist) - Math.min(...valuelist)) / 5)
             const chart = new G2.Chart({
-                container: 'bartech',
+                container: 'bartechgraph',
                 forceFit: true,
                 height: 250
             });
@@ -275,7 +297,7 @@ export default {
             const valuelist = data.map(x => x.v)
             const ticks = Math.floor((Math.max(...valuelist) - Math.min(...valuelist)) / 5)
             const chart = new G2.Chart({
-                container: 'barshop',
+                container: 'barshopgraph',
                 forceFit: true,
                 height: 250
             });
@@ -285,6 +307,9 @@ export default {
             });
             chart.interval().position('n*v');
             chart.render();
+        },
+        watchhandle_costmatrix(val){
+            this.initData({"config": {"name": val}, "title": 'COST MATRIX'})
         }
     }
 }
@@ -293,6 +318,12 @@ export default {
 .behavior{
     height: 900px !important
 }
+.subtitle p{
+    color: lightslategrey;
+    font-size: 22px;
+    font-family: fantasy;
+}
+
 #barcost{
     height:200px;
     width: 400px;
@@ -306,19 +337,19 @@ export default {
 
 #barshop{
     height:250px;
-    width: 300px;
+    width: 270px;
     float: left;
 }
 
 #barcan{
     height:250px;
-    width: 300px;
+    width: 270px;
     float: left;
 }
 
 #bartech{
     height:250px;
-    width: 300px;
+    width: 270px;
     float: left;
 }
 </style>
