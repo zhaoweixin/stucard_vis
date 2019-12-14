@@ -107,7 +107,7 @@ export default {
         costmatrix2:["18皮具艺术","18国际商务","18计算机网络","18工商企管","18市场营销","18首饰设计","18工程造价","18工业工程","18物流管理","18商务日语",
         "18建筑工程","18艺术设计","18工业机器人","18社会工作","18汽车检测","18市政工程","18酒店管理","18产品艺术","18机械制造（学徒）",
         "18动漫设计","18环境艺术","18投资与理财"],
-        hallcondition:['weekday', 'weekend'],
+        hallcondition:['hall_weekday', 'hall_weekend'],
         frequentpattern:[1,2,3],
         cluster:[-1, 1, 3, 8, 9, 12, 13, 16, 17, 18],
         value: '',
@@ -121,7 +121,6 @@ export default {
     ControlPanel
   },
   mounted(){
-        console.log('mounted')
   },
   methods:{
       handleMatrix1(command) {

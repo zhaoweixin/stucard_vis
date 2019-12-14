@@ -78,15 +78,12 @@ export default {
     },
     watch: {
         hallcondition: function(val, oldVal){
-            console.log('watch-hallcondition', val)
             this.watchhandle_hallcondition(val)
         },
         frequentpattern: function(val, oldVal){
-            console.log('watch-frequentpattern', val)
             this.watchhandle_frequentpattern(val)
         },
         cluster: function(val, oldVal){
-            console.log('watch-cluster', val)
             this.watchhandle_cluster(val)
         }
     },
@@ -135,6 +132,8 @@ export default {
                 type: 'diagram.arc',
                 marginRatio: 0.5
             });
+
+            d3.select('#trajectorygraph').html('')
 
             const chart = new G2.Chart({
                 container: 'trajectorygraph',
@@ -190,6 +189,8 @@ export default {
                     data.push(v)
                 })
             })
+
+            d3.select('#hallgraph').html('')
             const chart = new G2.Chart({
                 container: 'hallgraph',
                 height: 280,
@@ -234,6 +235,7 @@ export default {
             config.data.forEach((d,v) => {
                 d.label = ' ' + d.label + ' '
             })
+            d3.select('#clusterscattergraph').html('')
             const chart = new G2.Chart({
                 container: 'clusterscattergraph',
                 width: 350,
@@ -271,6 +273,7 @@ export default {
                 bar_data.push(config['data']['bar'][i])
             }
             
+            d3.select('#clusterbargraph').html('')
             const chart_bar = new G2.Chart({
                 container: 'clusterbargraph',
                 forceFit: true,
@@ -310,6 +313,7 @@ export default {
                 return obj;
             }
             });
+            d3.select('#clusterboxgraph').html('')
             const chart = new G2.Chart({
             container: 'clusterboxgraph',
             forceFit: true,
@@ -354,13 +358,13 @@ export default {
             chart.render();
         },
         watchhandle_hallcondition(val){
-
+            this.initHall({'config': {'table': val}})
         },
         watchhandle_frequentpattern(val){
-
+            this.initFrequentItem({'config': {'steps': val}})
         },
         watchhandle_cluster(val){
-
+            this.initClusterDescribe({'config': {'label': val}})
         }
     },
     mounted(){

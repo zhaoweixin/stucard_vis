@@ -69,7 +69,6 @@ export default {
     },
     watch: {
         costmatrix: function(val, oldVal){
-            console.log('watch-costmatrix', val)
             this.watchhandle_costmatrix(val)
         }
     },
@@ -99,7 +98,6 @@ export default {
             let that = this
             d3.select('#detailtitle').select('p').html('Major - ' + config.config.name)
             DataManager.test(config).then((res) => {
-                console.log(res)
                 that.DrawHeatMap({
                     'title': config.title,
                     'data': res.data[0]['cost_matrix']
@@ -135,6 +133,7 @@ export default {
             const source = [];
             const data = config.data
             d3.select('#matrix').html(config.title)
+            d3.select('#heatmap').html('')
             for (let i = 0; i <data.length; i++) {
                 for(let j = 0; j < data[i].length; j++){
                     const obj = {};
@@ -221,6 +220,7 @@ export default {
             chart.render();
         },
         DrawBarCost(config){
+            d3.select('#barcostgraph').html('')
             const data = [
                 {'major': 'All', 'count': config.data[2]},
                 {'major': config.name, 'count': config.data[1]},
@@ -241,6 +241,7 @@ export default {
             chart.render();
         },
         DrawBarFund(config){
+            d3.select('#barfundgraph').html('')
             const data = [
                 {'major': 'All', 'count': config.data[2]},
                 {'major': config.name, 'count': config.data[1]},
@@ -261,6 +262,7 @@ export default {
             chart.render();
         },
         DrawBarCan(config){
+            d3.select('#barcangraph').html('')
             const data = config.data
             const valuelist = data.map(x => x.v)
             const ticks = Math.floor((Math.max(...valuelist) - Math.min(...valuelist)) / 5)
@@ -277,9 +279,15 @@ export default {
             chart.render();
         },
         DrawBarTech(config){
+            d3.select('#bartechgraph').html('')
             const data = config.data
             const valuelist = data.map(x => x.v)
-            const ticks = Math.floor((Math.max(...valuelist) - Math.min(...valuelist)) / 5)
+            let ticks = 0
+            if(valuelist.length <= 4){
+                ticks = valuelist.length
+            } else {
+                ticks = Math.floor((Math.max(...valuelist) - Math.min(...valuelist)) / 5)
+            }
             const chart = new G2.Chart({
                 container: 'bartechgraph',
                 forceFit: true,
@@ -293,6 +301,7 @@ export default {
             chart.render();
         },
         DrawBarShop(config){
+            d3.select('#barshopgraph').html('')
             const data = config.data
             const valuelist = data.map(x => x.v)
             const ticks = Math.floor((Math.max(...valuelist) - Math.min(...valuelist)) / 5)
