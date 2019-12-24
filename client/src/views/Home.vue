@@ -125,27 +125,27 @@ export default {
   methods:{
       handleMatrix1(command) {
         let that = this
-        this.$message('click on item ' + that.costmatrix1[command]);
+        //this.$message('click on item ' + that.costmatrix1[command]);
         this.$store.commit('costmatrix', that.costmatrix1[command])
       },
       handleMatrix2(command) {
         let that = this
-        this.$message('click on item ' + that.costmatrix2[command]);
+        //this.$message('click on item ' + that.costmatrix2[command]);
         this.$store.commit('costmatrix', that.costmatrix2[command])
       },
       handlehallCondition(command){
         let that = this
-        this.$message('click on item ' + that.hallcondition[command]);
+        //this.$message('click on item ' + that.hallcondition[command]);
         this.$store.commit('hallcondition', that.hallcondition[command])
       },
       handlehallFrequentpattern(command){
         let that = this
-        this.$message('click on item ' + that.frequentpattern[command]);
+        //this.$message('click on item ' + that.frequentpattern[command]);
         this.$store.commit('frequentpattern', that.frequentpattern[command])
       },
       handlehallCluster(command){
         let that = this
-        this.$message('click on item ' + that.cluster[command]);
+        //this.$message('click on item ' + that.cluster[command]);
         this.$store.commit('cluster', that.cluster[command])
       }
   }

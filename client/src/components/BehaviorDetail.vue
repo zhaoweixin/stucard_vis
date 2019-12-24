@@ -232,6 +232,7 @@ export default {
             
         },
         drawCluster(config){
+            let that = this
             config.data.forEach((d,v) => {
                 d.label = ' ' + d.label + ' '
             })
@@ -264,6 +265,10 @@ export default {
             chart.legend('label', {
                 position: 'bottom',
             });
+            chart.on('point:click', ev => {
+                let label = +ev.data._origin.label
+                that.$store.commit('cluster', label)
+            })
             chart.render();  
         },
         drawClusterDescribe(config){
