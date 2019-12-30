@@ -60,16 +60,13 @@ app.post('/getVector', (req,res,next) => {
         assert.equal(null, err);
         var db = client.db(dbname)
         var result = findvector(db, req.body.config, (docs) => {
-            let data = {'box': [], 'bar': docs[0].value.dept}
+            let data = {'box': [], 'bar': docs[0].value.dept, 'label': req.body.config.label}
             let dict = {
                 'raw1': '总存储金额',
                 'raw2': '总消费金额/总存储金额',
                 'raw3': '食堂消费/总存储',
                 'raw4': '一天消费超20RMB次数',
                 'raw5': '超市消费次数'
-            }
-            for(key in dict){
-
             }
             
             for(key in dict){
@@ -154,7 +151,7 @@ app.post('/testmysql', (req, res, next) => {
 
 const findDocuments = function(db, config, callback) {
     // Get the documents collection
-    const collection = db.collection('behavior');
+    const collection = db.collection('behavior1');
     // Find some documents
     collection.find(config).toArray(function(err, docs) {
       assert.equal(err, null);

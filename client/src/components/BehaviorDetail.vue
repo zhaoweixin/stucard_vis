@@ -36,14 +36,14 @@
         <div id="row3">
             <div id="clusterbar">
                     <div id="clusterbartitle">
-                        <h4>Cluster bar</h4>
+                        <h4>Cluster Card Check Rank</h4>
                     </div>
                     <div id="clusterbargraph"></div>
                 </div>
 
             <div id="clusterbox">
                     <div id="clusterboxtitle">
-                        <h4>Cluster Money Item</h4>
+                        <h4>Cluster Vector Description</h4>
                     </div>
                     <div id="clusterboxgraph"></div>
                 </div>
@@ -110,7 +110,7 @@ export default {
             let that = this
             DataManager.getVector(config).then((res) => {
                 that.drawClusterDescribe({"data": res.data})
-                that.drawClusterBox({"data": res.data.box})
+                that.drawClusterBox({"data": res.data})
             })
         },
         drawfrequentgraph(config){
@@ -232,6 +232,7 @@ export default {
             
         },
         drawCluster(config){
+            console.log(config)
             let that = this
             config.data.forEach((d,v) => {
                 d.label = ' ' + d.label + ' '
@@ -259,7 +260,7 @@ export default {
                 .tooltip('label*x*y', (label, x, y) => {
                     return {
                     name: label,
-                    value: x + '(cm), ' + y + '(kg)'
+                    value: x + ', ' + y + ''
                     };
                 });
             chart.legend('label', {
@@ -279,6 +280,7 @@ export default {
             }
             
             d3.select('#clusterbargraph').html('')
+            d3.select('#clusterbartitle').select('h4').html('Cluster Card Check Rank: ' + config.data.label)
             const chart_bar = new G2.Chart({
                 container: 'clusterbargraph',
                 forceFit: true,
@@ -295,9 +297,8 @@ export default {
             chart_bar.render();
         },
         drawClusterBox(config){
-            let chart_box = config.data
+            let chart_box = config.data.box
 
-            
             let scale_list = {}
             chart_box.forEach((d,i) => {
                 scale_list[d.x] = {'pos': d3.scaleLinear().domain([d.low, d.high]).range([0.5, 1.5]),
@@ -318,7 +319,10 @@ export default {
                 return obj;
             }
             });
+
+            
             d3.select('#clusterboxgraph').html('')
+            d3.select('#clusterboxtitle').select('h4').html('Cluster Vector Description: ' + config.data.label)
             const chart = new G2.Chart({
             container: 'clusterboxgraph',
             forceFit: true,
