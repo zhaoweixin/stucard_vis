@@ -3,6 +3,13 @@
         <div id="detailtitle" class="subtitle">
             <p>Major - </p>
         </div>
+        <div id="selector">
+              <el-radio-group v-model="major_sex">
+                <el-radio :label="0">All</el-radio>
+                <el-radio :label="1">Male</el-radio>
+                <el-radio :label="2">FeMale</el-radio>
+            </el-radio-group>
+        </div>
         <div>
             <h4 id='matrix'>cost matrix</h4>
             <div id='heatmap'></div>
@@ -23,23 +30,23 @@
                 </div>
         </div>
         <div >
-            <div id="barshop">
-                <div id="barshoptitle">
-                        <h4 id='averagecount'>Shop</h4>
-                    </div>
-                <div id="barshopgraph"></div>
-            </div>
             <div id="barcan">
                 <div id="barcantitle">
-                        <h4 id='averagecount'>Canteen</h4>
+                        <h4 id='averagecount'>Study</h4>
                     </div>
                 <div id="barcangraph"></div>
             </div>
             <div id="bartech">
                 <div id="bartechtitle">
-                        <h4 id='averagecount'>Tech</h4>
+                        <h4 id='averagecount'>Cost</h4>
                     </div>
                 <div id="bartechgraph"></div>
+            </div>
+            <div id="barshop">
+                <div id="barshoptitle">
+                        <h4 id='averagecount'>Other</h4>
+                    </div>
+                <div id="barshopgraph"></div>
             </div>
         </div>
     </div>
@@ -59,7 +66,8 @@ export default {
                 { genre: "Action", sold: 120 },
                 { genre: "Shooter", sold: 350 },
                 { genre: "Other", sold: 150 }
-            ]
+            ],
+            major_sex: 0
         }
     },
     computed: {
@@ -68,13 +76,21 @@ export default {
             }
     },
     watch: {
-        costmatrix: function(val, oldVal){
-            this.watchhandle_costmatrix(val)
+        costmatrix: {
+            deep: true,
+            handler: function(val, oldVal){
+                this.watchhandle_costmatrix(val)
+            }
+        },
+        major_sex: {
+            handler: function(val, oldVal){
+                this.majorsex_handler(val)
+            }
         }
     },
     mounted() {
         //this.initComponent()
-        this.initData({"config": {'name': '18工业设计'}, "title": 'COST MATRIX'})
+        this.initData({"config": {'name': '18工业设计', 'sex': 0}, "title": 'COST MATRIX'})
     },
     methods: {
         initComponent(){
@@ -95,6 +111,7 @@ export default {
             this.chart.on('plotclick', ev => {console.log('click', ev)});
         },
         initData(config){
+            this.$store.commit('nowmajor', config.config.name)
             let that = this
             d3.select('#detailtitle').select('p').html('Major - ' + config.config.name)
             DataManager.test(config).then((res) => {
@@ -110,16 +127,16 @@ export default {
                     'data': res.data[0]['fund'],
                     'name': res.data[0].name
                 })
-                that.DrawBarCan({
-                    'data': res.data[0]['can'],
+                that.DrawBar_studyrank({
+                    'data': res.data[0]['study_rank'],
                     'name': res.data[0].name
                 })
-                that.DrawBarTech({
-                    'data': res.data[0]['techbuild'],
+                that.DrawBar_costrank({
+                    'data': res.data[0]['cost_rank'],
                     'name': res.data[0].name
                 })
-                that.DrawBarShop({
-                    'data': res.data[0]['shop'],
+                that.DrawBar_otherrank({
+                    'data': res.data[0]['cost_other_rank'],
                     'name': res.data[0].name
                 })
             }).catch(err => {
@@ -261,9 +278,15 @@ export default {
             chart.interval().position('major*count');
             chart.render();
         },
-        DrawBarCan(config){
+        DrawBar_studyrank(config){
             d3.select('#barcangraph').html('')
-            const data = config.data
+            let data = []
+            for(let i=0; i<config.data.length; i++){
+                if(i<=4){
+                    data.push(config.data[i])
+                }
+            }
+            
             const valuelist = data.map(x => x.v)
             const ticks = Math.floor((Math.max(...valuelist) - Math.min(...valuelist)) / 5)
             const chart = new G2.Chart({
@@ -275,12 +298,19 @@ export default {
             chart.scale('v', {
                 tickInterval: ticks
             });
-            chart.interval().position('n*v');
+
+            chart.interval().position('n*v')
+
             chart.render();
         },
-        DrawBarTech(config){
+        DrawBar_costrank(config){
             d3.select('#bartechgraph').html('')
-            const data = config.data
+            let data = []
+            for(let i=0; i<config.data.length; i++){
+                if(i<=4){
+                    data.push(config.data[i])
+                }
+            }
             const valuelist = data.map(x => x.v)
             let ticks = 0
             if(valuelist.length <= 4){
@@ -300,9 +330,16 @@ export default {
             chart.interval().position('n*v');
             chart.render();
         },
-        DrawBarShop(config){
+        DrawBar_otherrank(config){
             d3.select('#barshopgraph').html('')
-            const data = config.data
+            
+            let data = []
+            for(let i=0; i<config.data.length; i++){
+                if(i<=4){
+                    data.push(config.data[i])
+                }
+            }
+            
             const valuelist = data.map(x => x.v)
             const ticks = Math.floor((Math.max(...valuelist) - Math.min(...valuelist)) / 5)
             const chart = new G2.Chart({
@@ -318,7 +355,10 @@ export default {
             chart.render();
         },
         watchhandle_costmatrix(val){
-            this.initData({"config": {"name": val}, "title": 'COST MATRIX'})
+            this.initData({"config": {"name": val.major, "sex": val.sex}, "title": 'COST MATRIX'})
+        },
+        majorsex_handler(val){
+            this.$store.commit('major_sex', val)
         }
     }
 }

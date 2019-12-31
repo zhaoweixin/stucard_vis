@@ -8,7 +8,9 @@ export default new Vuex.Store({
     costmatrix: null,
     hallcondition: null,
     frequentpattern: null,
-    cluster: null
+    cluster: null,
+    major_sex: 0,
+    nowmajor: null
   },
   mutations: {
     costmatrix(state, msg){
@@ -22,6 +24,12 @@ export default new Vuex.Store({
     },
     cluster(state, msg){
       state.cluster = msg
+    },
+    major_sex(state, msg){
+      state.major_sex = msg
+    },
+    nowmajor(state, msg){
+      state.nowmajor = msg
     }
   },
   actions: {

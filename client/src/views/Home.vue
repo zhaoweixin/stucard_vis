@@ -110,8 +110,7 @@ export default {
         hallcondition:['hall_weekday', 'hall_weekend'],
         frequentpattern:[1,2,3],
         cluster:[-1, 1, 3, 8, 9, 12, 13, 16, 17, 18],
-        value: '',
-        radio: '1'
+        value: ''
     }
   },
   name: 'home',
@@ -120,18 +119,38 @@ export default {
     BehaviorDetail,
     ControlPanel
   },
+  computed:{
+    major_sex() {
+      return this.$store.state.major_sex
+    }
+  },
+  watch:{
+    major_sex:{
+      handler: function(val, oldVal){
+        this.sexradio_handler(val)
+      }
+    }
+  },
   mounted(){
   },
   methods:{
       handleMatrix1(command) {
         let that = this
+        let mes = {
+          'major': that.costmatrix1[command],
+          'sex': this.$store.state.major_sex
+        }
         //this.$message('click on item ' + that.costmatrix1[command]);
-        this.$store.commit('costmatrix', that.costmatrix1[command])
+        this.$store.commit('costmatrix', mes)
       },
       handleMatrix2(command) {
         let that = this
+        let mes = {
+          'major': that.costmatrix2[command],
+          'sex': this.$store.state.major_sex
+        }
         //this.$message('click on item ' + that.costmatrix2[command]);
-        this.$store.commit('costmatrix', that.costmatrix2[command])
+        this.$store.commit('costmatrix', mes)
       },
       handlehallCondition(command){
         let that = this
@@ -147,6 +166,14 @@ export default {
         let that = this
         //this.$message('click on item ' + that.cluster[command]);
         this.$store.commit('cluster', that.cluster[command])
+      },
+      sexradio_handler(val){
+        let that = this
+        let mes = {
+          'major': that.$store.state.nowmajor,
+          'sex': that.$store.state.major_sex
+        }
+        this.$store.commit('costmatrix', mes)
       }
   }
 }

@@ -4,7 +4,7 @@ import qs from 'qs';
 export default class DataManager{
     static getCostBehavior(data){
         //if exist
-        return axios.post("http://127.0.0.1:3000/basic_line", qs.stringify({"config": {'name': '18工业设计'}}), {
+        return axios.post("http://10.10.4.143:3000/basic_line", qs.stringify({"config": {'name': '18工业设计'}}), {
             header: {
                 "Content-Type": "application/x-www-form-urlencoded"
             }
@@ -12,7 +12,7 @@ export default class DataManager{
     }
     static test(data){
         //if exist
-        return axios.post("http://127.0.0.1:3000/testmongodb", qs.stringify(data), {
+        return axios.post("http://10.10.4.143:3000/testmongodb", qs.stringify(data), {
             header: {
                 "Content-Type": "application/x-www-form-urlencoded"
             }
@@ -21,7 +21,7 @@ export default class DataManager{
     static getfrequentpattern(data){
         //data = {'config': {'steps': 1}}
         //if exist
-        return axios.post("http://127.0.0.1:3000/getfrequentpattern", qs.stringify(data), {
+        return axios.post("http://10.10.4.143:3000/getfrequentpattern", qs.stringify(data), {
             header: {
                 "Content-Type": "application/x-www-form-urlencoded"
             }
@@ -30,7 +30,7 @@ export default class DataManager{
     static getHall(data){
         //data = {'config': {'table': 'hall_weekday'}}
         //if exist
-        return axios.post("http://127.0.0.1:3000/getHall", qs.stringify(data), {
+        return axios.post("http://10.10.4.143:3000/getHall", qs.stringify(data), {
             header: {
                 "Content-Type": "application/x-www-form-urlencoded"
             }
@@ -39,7 +39,7 @@ export default class DataManager{
     static getVector(data){
         //data = {'config': {'label': -1}}
         //if exist
-        return axios.post("http://127.0.0.1:3000/getVector", qs.stringify(data), {
+        return axios.post("http://10.10.4.143:3000/getVector", qs.stringify(data), {
             header: {
                 "Content-Type": "application/x-www-form-urlencoded"
             }
@@ -48,7 +48,7 @@ export default class DataManager{
     static getCluster(data){
         //data = {'config': {}}
         //if exist
-        return axios.post("http://127.0.0.1:3000/getCluster", qs.stringify(data), {
+        return axios.post("http://10.10.4.143:3000/getCluster", qs.stringify(data), {
             header: {
                 "Content-Type": "application/x-www-form-urlencoded"
             }
@@ -57,7 +57,7 @@ export default class DataManager{
     static getConfig(){
         //data = {'config': {}}
         //if exist
-        return axios.post("http://127.0.0.1:3000/getConfig", qs.stringify(), {
+        return axios.post("http://10.10.4.143:3000/getConfig", qs.stringify(), {
             header: {
                 "Content-Type": "application/x-www-form-urlencoded"
             }

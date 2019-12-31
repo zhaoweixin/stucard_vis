@@ -8,7 +8,7 @@ const pool = mysqlPool.getPool();
 
 const assert = require('assert');
 const MongoClient = require('mongodb').MongoClient
-const url = 'mongodb://localhost:27017';
+const url = 'mongodb://10.10.4.143:27017';
 const dbname = 'stu_vis'
 //---------------------------------
 app.use(bodyParser.json()) // handle json data
@@ -133,6 +133,55 @@ app.post('/testmongodb', (req, res, next) => {
     })
 })
 
+app.post('/getbehavior_all', (req, res, next) => {
+    //req.body
+    MongoClient.connect(url, (err, client) => {
+        if(err){
+            console.log(err)
+        }
+        assert.equal(null, err);
+        var db = client.db(dbname)
+        var result = findBehavior_all(db, req.body.config, (docs) => {
+            res.setHeader("Access-Control-Allow-Origin", "*");
+            res.send(docs);
+        })
+        client.close()
+    })
+})
+app.post('/getbehavior_boy', (req, res, next) => {
+    //req.body
+    MongoClient.connect(url, (err, client) => {
+        if(err){
+            console.log(err)
+        }
+        assert.equal(null, err);
+        var db = client.db(dbname)
+        var result = findBehavior_boy(db, req.body.config, (docs) => {
+            res.setHeader("Access-Control-Allow-Origin", "*");
+            res.send(docs);
+        })
+        client.close()
+    })
+})
+app.post('/getbehavior_girl', (req, res, next) => {
+    //req.body
+    MongoClient.connect(url, (err, client) => {
+        if(err){
+            console.log(err)
+        }
+        assert.equal(null, err);
+        var db = client.db(dbname)
+        var result = findBehavior_girl(db, req.body.config, (docs) => {
+            res.setHeader("Access-Control-Allow-Origin", "*");
+            res.send(docs);
+        })
+        client.close()
+    })
+})
+
+
+
+
 app.post('/testmysql', (req, res, next) => {
     pool.getConnection(function(err, connection) {
         connection.query(`select * from behavior`, function(err, result) {
@@ -151,22 +200,65 @@ app.post('/testmysql', (req, res, next) => {
 
 const findDocuments = function(db, config, callback) {
     // Get the documents collection
-    const collection = db.collection('behavior1');
+    let collection_name = null
+
+    if(config.sex == '0'){
+        collection_name = 'behavior_all'
+    } else if(config.sex == '1'){
+        collection_name = 'behavior_boy'
+    } else if(config.sex == '2'){
+        collection_name = 'behavior_girl'
+    }
+
+    const collection = db.collection(collection_name);
+    // Find some documents
+    collection.find({'name': config.name}).toArray(function(err, docs) {
+      assert.equal(err, null);
+      console.log(new Date().toISOString().replace(/T/, ' '). replace(/\..+/, ''));
+      callback(docs);
+    });
+  }
+
+  const findBehavior_all = function(db, config, callback) {
+    // Get the documents collection
+    const collection = db.collection('behavior_all');
     // Find some documents
     collection.find(config).toArray(function(err, docs) {
       assert.equal(err, null);
-      console.log("Found the following records");
+      console.log(new Date().toISOString().replace(/T/, ' '). replace(/\..+/, ''));
+      callback(docs);
+    });
+  }
+
+  const findBehavior_boy = function(db, config, callback) {
+    // Get the documents collection
+    const collection = db.collection('behavior_boy');
+    // Find some documents
+    collection.find(config).toArray(function(err, docs) {
+      assert.equal(err, null);
+      console.log(new Date().toISOString().replace(/T/, ' '). replace(/\..+/, ''));
+      callback(docs);
+    });
+  }
+
+  const findBehavior_girl = function(db, config, callback) {
+    // Get the documents collection
+    const collection = db.collection('behavior_girl');
+    // Find some documents
+    collection.find(config).toArray(function(err, docs) {
+      assert.equal(err, null);
+      console.log(new Date().toISOString().replace(/T/, ' '). replace(/\..+/, ''));
       callback(docs);
     });
   }
 
   const findFrequentPattern = function(db, config, callback) {
     // Get the documents collection
-    const collection = db.collection('frequentpattern');
+    const collection = db.collection('frequentpattern2');
     // Find some documents
     collection.find(config).toArray(function(err, docs) {
       assert.equal(err, null);
-      console.log("Found the following records");
+      console.log(new Date().toISOString().replace(/T/, ' '). replace(/\..+/, ''));
       callback(docs);
     });
   }
@@ -177,7 +269,7 @@ const findDocuments = function(db, config, callback) {
     // Find some documents
     collection.find().toArray(function(err, docs) {
       assert.equal(err, null);
-      console.log("Found the following records");
+      console.log(new Date().toISOString().replace(/T/, ' '). replace(/\..+/, ''));
       callback(docs);
     });
   }
@@ -189,7 +281,7 @@ const findDocuments = function(db, config, callback) {
     //{"label": -1}
     collection.find(config).toArray(function(err, docs) {
       assert.equal(err, null);
-      console.log("Found the following records");
+      console.log(new Date().toISOString().replace(/T/, ' '). replace(/\..+/, ''));
       callback(docs);
     });
   }
@@ -201,7 +293,7 @@ const findDocuments = function(db, config, callback) {
     //{}
     collection.find().toArray(function(err, docs) {
       assert.equal(err, null);
-      console.log("Found the following records");
+      console.log(new Date().toISOString().replace(/T/, ' '). replace(/\..+/, ''));
       callback(docs);
     });
   }
@@ -213,10 +305,10 @@ const findDocuments = function(db, config, callback) {
     //{}
     collection.find().toArray(function(err, docs) {
       assert.equal(err, null);
-      console.log("Found the following records");
+      console.log(new Date().toISOString().replace(/T/, ' '). replace(/\..+/, ''));
       callback(docs);
     });
   }
 
-app.listen(3000, () => console.log('stu_vis server app listening on port 3000!'))
+app.listen(3000, () => console.log('stu_vis server app listening on 10.10.4.143:3000!'))
 
