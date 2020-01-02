@@ -8,7 +8,6 @@ const pool = mysqlPool.getPool();
 
 const assert = require('assert');
 const MongoClient = require('mongodb').MongoClient
-//const url = 'mongodb://10.10.4.143:27017';
 const url = 'mongodb://localhost:27017'
 const dbname = 'stu_vis'
 //---------------------------------
