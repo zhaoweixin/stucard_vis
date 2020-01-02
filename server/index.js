@@ -8,7 +8,8 @@ const pool = mysqlPool.getPool();
 
 const assert = require('assert');
 const MongoClient = require('mongodb').MongoClient
-const url = 'mongodb://10.10.4.143:27017';
+//const url = 'mongodb://10.10.4.143:27017';
+const url = 'mongodb://localhost:27017'
 const dbname = 'stu_vis'
 //---------------------------------
 app.use(bodyParser.json()) // handle json data
@@ -25,7 +26,7 @@ app.post('/getfrequentpattern', (req,res,next) => {
         }
         assert.equal(null, err);
         var db = client.db(dbname)
-        var result = findFrequentPattern(db, req.body.config, (docs) => {
+        var result = findFrequentPattern(db, req.body, (docs) => {
             res.setHeader("Access-Control-Allow-Origin", "*");
             res.send(docs);
         })
@@ -41,7 +42,14 @@ app.post('/getHall', (req, res, next) => {
         }
         assert.equal(null, err);
         var db = client.db(dbname)
-        var result = findHall(db, req.body.config, (docs) => {
+        let tablestr = req.body.config.table
+        if(+req.body.config.countsum == 1){
+            tablestr = tablestr + '_count' 
+        } else {
+            tablestr = tablestr + '_cost'
+        }
+        console.log(tablestr)
+        var result = findHall(db, tablestr, (docs) => {
             res.setHeader("Access-Control-Allow-Origin", "*");
             res.send(docs);
         })
@@ -252,11 +260,12 @@ const findDocuments = function(db, config, callback) {
     });
   }
 
+
   const findFrequentPattern = function(db, config, callback) {
     // Get the documents collection
-    const collection = db.collection('frequentpattern2');
+    const collection = db.collection('newfrequent');
     // Find some documents
-    collection.find(config).toArray(function(err, docs) {
+    collection.find({'label': config.cluster}).toArray(function(err, docs) {
       assert.equal(err, null);
       console.log(new Date().toISOString().replace(/T/, ' '). replace(/\..+/, ''));
       callback(docs);
@@ -265,7 +274,7 @@ const findDocuments = function(db, config, callback) {
 
   const findHall = function(db, config, callback) {
     // Get the documents collection
-    const collection = db.collection(config.table);
+    const collection = db.collection(config);
     // Find some documents
     collection.find().toArray(function(err, docs) {
       assert.equal(err, null);

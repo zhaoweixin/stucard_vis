@@ -5,6 +5,12 @@
         </div>
         <div id="row1">
             <div id="hall">
+                <div id="selector">
+                        <el-radio-group v-model="hall_countsum">
+                            <el-radio :label="1">Count</el-radio>
+                            <el-radio :label="2">Sum</el-radio>
+                        </el-radio-group>
+                </div>
                 <div id="halltitle">
                     <h4>Hall Condition</h4>
                 </div>
@@ -26,6 +32,13 @@
                 <div id='trajectory'>
                     <div id="trajectorytitle">
                         <h4>Frequent Items</h4>
+                    </div>
+                    <div id="selector">
+                        <el-radio-group v-model="items">
+                            <el-radio :label="1">2 items</el-radio>
+                            <el-radio :label="2">3 items</el-radio>
+                            <el-radio :label="3">4 items</el-radio>
+                        </el-radio-group>
                     </div>
                     <div id="trajectorygraph">
 
@@ -59,7 +72,8 @@ export default {
     name: '',
     data(){
         return{
-
+            items: 1,
+            hall_countsum: 1
         }
     },
     computed: {
@@ -85,13 +99,27 @@ export default {
         },
         cluster: function(val, oldVal){
             this.watchhandle_cluster(val)
+        },
+        items: function(val, oldVal){
+            this.watchhandle_items(val)
+        },
+        hall_countsum: function(val, oldVal){
+            this.watchhandle_hallcountsum(val)
         }
     },
     methods:{
         initFrequentItem(config){
             let that = this;
-            DataManager.getfrequentpattern(config).then((res) => {
-                that.drawfrequentgraph({'steps': config.config.steps, "data": res.data[0]})
+            DataManager.getfrequentpattern({"cluster": config.cluster, "steps": config.config.steps}).then((res) => {
+                
+                that.$store.commit('patterncluster', config.cluster)
+                let data = {"links":[],"nodes":[],"steps":config.config.steps}
+                for(let i=0; i<res.data[0]['value']['frequent'].length; i++){
+                    if(res.data[0]['value']['frequent'][i]['steps'] == config.config.steps){
+                        data = res.data[0]['value']['frequent'][i]
+                    }
+                }
+                that.drawfrequentgraph({'steps': config.config.steps, "data": data, "cluster": config.cluster})
             })
         },
         initHall(config){
@@ -116,7 +144,8 @@ export default {
         drawfrequentgraph(config){
             // arc diagram layout
             let data = config.data
-            d3.select('#trajectorytitle').select('h4').html('Frequent Patterns: ' + config.steps + '-item-sets')
+            let steps = +config.steps + 1
+            d3.select('#trajectorytitle').select('h4').html('Frequent Patterns: ' + steps + ' / Cluster : ' + config.cluster)
             const lineValue = data.links.map(v => v.value)
             const lineValue_Scale = d3.scaleLinear().domain([d3.min(lineValue), d3.max(lineValue)]).range([1,5])
             data.links.forEach((d,i) => {
@@ -138,8 +167,8 @@ export default {
             const chart = new G2.Chart({
                 container: 'trajectorygraph',
                 forceFit: true,
-                height: 300,
-                padding: 120
+                height: 240,
+                padding: 75
             });
             chart.legend(false);
             chart.tooltip({
@@ -180,7 +209,8 @@ export default {
             chart.render();
         },
         drawHallGraph(config){
-            d3.select('#halltitle').select('h4').html('Hall Condition: ' + config.steps)
+            let title = 'Hall Condition: ' + this.$store.state.hallcondition.split('_')[1]
+            d3.select('#halltitle').select('h4').html(title)
             const data = []
             config.data.forEach( (d,i) => {
                 d.data.forEach( (v,j) => {
@@ -193,7 +223,7 @@ export default {
             d3.select('#hallgraph').html('')
             const chart = new G2.Chart({
                 container: 'hallgraph',
-                height: 280,
+                height: 270,
                 width: 750,
                 padding: [ 20, 110, 70, 35 ]
             });
@@ -232,7 +262,6 @@ export default {
             
         },
         drawCluster(config){
-            console.log(config)
             let that = this
             config.data.forEach((d,v) => {
                 d.label = ' ' + d.label + ' '
@@ -241,7 +270,7 @@ export default {
             const chart = new G2.Chart({
                 container: 'clusterscattergraph',
                 width: 350,
-                height: 300
+                height: 250
             });
 
             // 数据格式： [{"gender":"female","height":161.2,"weight":51.6}]
@@ -269,6 +298,8 @@ export default {
             chart.on('point:click', ev => {
                 let label = +ev.data._origin.label
                 that.$store.commit('cluster', label)
+                that.$store.commit('patterncluster', label)
+                that.watchhandle_frequentpattern()
             })
             chart.render();  
         },
@@ -284,7 +315,8 @@ export default {
             const chart_bar = new G2.Chart({
                 container: 'clusterbargraph',
                 forceFit: true,
-                height: 200
+                height: 205,
+                padding: [ 20, 50, 50, 65 ]
             });
 
             chart_bar.source(bar_data);
@@ -326,7 +358,8 @@ export default {
             const chart = new G2.Chart({
             container: 'clusterboxgraph',
             forceFit: true,
-            height: 200
+            height: 205,
+            padding: [ 20, 50, 50, 50 ]
             // padding: [ 20, 120, 95 ]
             });
             chart.source(dv, {
@@ -367,18 +400,29 @@ export default {
             chart.render();
         },
         watchhandle_hallcondition(val){
-            this.initHall({'config': {'table': val}})
+            let countsum = this.$store.state.countsum
+            let hallcondition = this.$store.state.hallcondition
+            this.initHall({'config': {'table': hallcondition, 'countsum': countsum}})
         },
         watchhandle_frequentpattern(val){
-            this.initFrequentItem({'config': {'steps': val}})
+            let that = this
+            this.initFrequentItem({'config': {'steps': that.$store.state.items}, "cluster": that.$store.state.patterncluster})
         },
         watchhandle_cluster(val){
             this.initClusterDescribe({'config': {'label': val}})
+        },
+        watchhandle_items(val){
+            this.$store.commit('items', val)
+            this.watchhandle_frequentpattern()
+        },
+        watchhandle_hallcountsum(val){
+            this.$store.commit('countsum', val)
+            this.watchhandle_hallcondition()
         }
     },
     mounted(){
-        this.initFrequentItem({'config': {'steps': 1}})
-        this.initHall({'config': {'table': 'hall_weekday'}})
+        this.initFrequentItem({'config': {'steps': 1}, "cluster": "all"})
+        this.initHall({'config': {'table': 'hall_weekday', 'countsum': 1}})
         this.initCluster()
         this.initClusterDescribe({'config': {'label': -1}})
         //this.testGraph()
@@ -387,10 +431,10 @@ export default {
 </script>
 <style scoped>
 #row1{
-    height: 255px;
+    height: 290px;
 }
 #row2{
-    height: 350px;
+    height: 300px;
 }
 #row21{
     width:50%;
@@ -399,6 +443,9 @@ export default {
 #row22{
     width:50%;
     float: left;
+}
+#row3{
+    height: 300px
 }
 
 #trajectory{

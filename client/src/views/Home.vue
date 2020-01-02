@@ -108,7 +108,7 @@ export default {
         "18建筑工程","18艺术设计","18工业机器人","18社会工作","18汽车检测","18市政工程","18酒店管理","18产品艺术","18机械制造（学徒）",
         "18动漫设计","18环境艺术","18投资与理财"],
         hallcondition:['hall_weekday', 'hall_weekend'],
-        frequentpattern:[1,2,3],
+        frequentpattern: ['all', -1, 1, 3, 8, 9, 12, 13, 16, 17, 18],
         cluster:[-1, 1, 3, 8, 9, 12, 13, 16, 17, 18],
         value: ''
     }
@@ -161,6 +161,7 @@ export default {
         let that = this
         //this.$message('click on item ' + that.frequentpattern[command]);
         this.$store.commit('frequentpattern', that.frequentpattern[command])
+        this.$store.commit('patterncluster', command)
       },
       handlehallCluster(command){
         let that = this
